@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mr TeacherDan's Imaginarium machine</title>
+  <style>
+    :root {
+      --bg: #f9f3e6;
+      --ink: #2f2a25;
+      --accent: #8e5f3c;
+      --accent-2: #d9b382;
+      --card: #fffaf0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      background: linear-gradient(180deg, #fff7ea, var(--bg));
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: linear-gradient(90deg, var(--accent), #6d4428);
+      color: #fff;
+      padding: 1.2rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,.2);
+    }
+    h1 { margin: 0; font-size: clamp(1.4rem, 2.6vw, 2.2rem); }
+    main {
+      width: min(1200px, 95vw);
+      margin: 1.2rem auto;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1rem;
+      flex: 1;
+    }
+    .panel, .board {
+      background: var(--card);
+      border: 2px solid var(--accent-2);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+    .category-list button {
+      width: 100%;
+      margin: .35rem 0;
+      padding: .6rem;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      text-align: left;
+    }
+    .category-list button:hover { background: #fff2de; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: .8rem;
+      margin-top: .8rem;
+    }
+    .card {
+      border: 1px solid #ceb090;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .card img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: #f0f0f0;
+    }
+    .card p {
+      margin: .5rem;
+      font-size: .9rem;
+    }
+    footer {
+      text-align: center;
+      padding: .9rem;
+      font-size: .9rem;
+      border-top: 1px solid #d9c6ab;
+      background: #fff9ef;
+    }
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mr TeacherDan's Imaginarium machine</h1>
+  </header>
+
+  <main>
+    <aside class="panel">
+      <h2>Categorías</h2>
+      <p>Esta plantilla carga automáticamente todas las carpetas de categorías.</p>
+      <div class="category-list" id="categoryList"></div>
+      <hr>
+      <p><strong>Importante:</strong> el navegador no puede leer directamente <code>C:\Users\...</code>. Copia esta HTML junto a tus carpetas en un servidor local.</p>
+    </aside>
+
+    <section class="board">
+      <h2 id="boardTitle">Cartas</h2>
+      <div class="cards" id="cards"></div>
+    </section>
+  </main>
+
+  <footer>
+    Contenido registrado por "Dan M. Mecikovsky"
+  </footer>
+
+  <script>
+    // CONFIGURA AQUÍ TUS CATEGORÍAS MANUALMENTE SI NO USAS SERVIDOR CON LISTADO
+    const categories = [
+      // { name: "animales", folder: "animales/recortadas" },
+      // { name: "objetos", folder: "objetos/recortadas" }
+    ];
+
+    // CONFIGURA AQUÍ LOS ARCHIVOS DE CADA CATEGORÍA
+    const imageIndex = {
+      // "animales": ["gato.png", "perro.jpg"],
+      // "objetos": ["silla.png", "mesa.png"]
+    };
+
+    const categoryList = document.getElementById('categoryList');
+    const cards = document.getElementById('cards');
+    const boardTitle = document.getElementById('boardTitle');
+
+    function renderCategories() {
+      categoryList.innerHTML = '';
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.textContent = cat.name;
+        btn.onclick = () => renderCards(cat);
+        categoryList.appendChild(btn);
+      });
+      if (categories[0]) renderCards(categories[0]);
+    }
+
+    function labelFromFilename(filename) {
+      return filename.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ');
+    }
+
+    function renderCards(cat) {
+      boardTitle.textContent = `Cartas: ${cat.name}`;
+      cards.innerHTML = '';
+      const files = imageIndex[cat.name] || [];
+      files.forEach(file => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        const img = document.createElement('img');
+        img.src = `${cat.folder}/${file}`;
+        img.alt = labelFromFilename(file);
+        const p = document.createElement('p');
+        p.textContent = labelFromFilename(file);
+        card.append(img, p);
+        cards.appendChild(card);
+      });
+    }
+
+    renderCategories();
+  </script>
+</body>
+</html>
