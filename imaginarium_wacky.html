@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mr TeacherDan's Imaginarium machine</title>
+  <style>
+    :root {
+      --sky: #b9ecff;
+      --sun: #ffdf6f;
+      --ink: #3f2540;
+      --pipe: #8b5e3c;
+      --card: #fff7d9;
+      --accent: #c24cff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", "Trebuchet MS", cursive;
+      color: var(--ink);
+      background: radial-gradient(circle at 10% 10%, #fff, var(--sky));
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: 1.4rem;
+      background: linear-gradient(90deg, #fffae5, #ffd5f5);
+      border-bottom: 4px dashed var(--accent);
+      text-align: center;
+    }
+    h1 { margin: 0; font-size: clamp(1.4rem, 2.5vw, 2.3rem); }
+
+    .rolly-polly {
+      position: absolute;
+      left: -120px;
+      top: 18px;
+      width: 95px;
+      height: 58px;
+      background: #673421;
+      border-radius: 35px;
+      box-shadow: inset -10px 0 #8f5338;
+      animation: fly 11s linear infinite;
+    }
+    .rolly-polly::before,
+    .rolly-polly::after {
+      content: "";
+      position: absolute;
+      background: #fff;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      top: 15px;
+    }
+    .rolly-polly::before { left: 17px; }
+    .rolly-polly::after { left: 37px; }
+
+    @keyframes fly {
+      0%   { transform: translateX(0) translateY(0) rotate(0deg); }
+      40%  { transform: translateX(52vw) translateY(-10px) rotate(5deg); }
+      70%  { transform: translateX(78vw) translateY(14px) rotate(-6deg); }
+      100% { transform: translateX(120vw) translateY(-2px) rotate(2deg); }
+    }
+
+    main {
+      width: min(1200px, 95vw);
+      margin: 1rem auto;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1rem;
+      flex: 1;
+    }
+    .panel, .board {
+      background: var(--card);
+      border: 3px solid #e79f2f;
+      border-radius: 18px;
+      padding: 1rem;
+      box-shadow: 6px 6px 0 #ffd07a;
+    }
+    .category-list button {
+      width: 100%;
+      margin: .35rem 0;
+      padding: .6rem;
+      border: 2px solid var(--pipe);
+      border-radius: 13px;
+      background: #fff;
+      cursor: pointer;
+      text-align: left;
+      font-weight: bold;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: .8rem;
+      margin-top: .8rem;
+    }
+    .card {
+      border: 2px dashed #bd66dc;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+    .card p { margin: .5rem; }
+    footer {
+      text-align: center;
+      padding: .9rem;
+      background: #fff6ce;
+      border-top: 3px dotted #d89100;
+    }
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="rolly-polly" aria-hidden="true"></div>
+    <h1>Mr TeacherDan's Imaginarium machine</h1>
+  </header>
+
+  <main>
+    <aside class="panel">
+      <h2>Palancas de categoría</h2>
+      <div class="category-list" id="categoryList"></div>
+      <p><strong>Nota:</strong> completa las categorías y archivos en el script al final.</p>
+    </aside>
+
+    <section class="board">
+      <h2 id="boardTitle">Cartas asombrosas</h2>
+      <div class="cards" id="cards"></div>
+    </section>
+  </main>
+
+  <footer>
+    Contenido registrado por "Dan M. Mecikovsky"
+  </footer>
+
+  <script>
+    const categories = [];
+    const imageIndex = {};
+
+    const categoryList = document.getElementById('categoryList');
+    const cards = document.getElementById('cards');
+    const boardTitle = document.getElementById('boardTitle');
+
+    function labelFromFilename(filename) {
+      return filename.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ');
+    }
+
+    function renderCards(cat) {
+      boardTitle.textContent = `Cartas asombrosas: ${cat.name}`;
+      cards.innerHTML = '';
+      (imageIndex[cat.name] || []).forEach(file => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        const img = document.createElement('img');
+        img.src = `${cat.folder}/${file}`;
+        img.alt = labelFromFilename(file);
+        const p = document.createElement('p');
+        p.textContent = labelFromFilename(file);
+        card.append(img, p);
+        cards.appendChild(card);
+      });
+    }
+
+    function renderCategories() {
+      categoryList.innerHTML = '';
+      categories.forEach(cat => {
+        const b = document.createElement('button');
+        b.textContent = cat.name;
+        b.onclick = () => renderCards(cat);
+        categoryList.appendChild(b);
+      });
+    }
+
+    renderCategories();
+  </script>
+</body>
+</html>
